@@ -1,0 +1,185 @@
+---
+title: Events
+description: Listen to HotkeyPad lifecycle events to integrate with your application
+---
+
+HotkeyPad dispatches custom events when the command palette opens and closes. You can listen to these events to trigger additional behavior in your application.
+
+## Available events
+
+HotkeyPad emits two custom events on the `window` object:
+
+<ParamField path="hotkeypad:open" type="CustomEvent">
+  Dispatched when the command palette is opened, before it becomes visible to the user.
+</ParamField>
+
+<ParamField path="hotkeypad:close" type="CustomEvent">
+  Dispatched when the command palette is closed, before it becomes hidden.
+</ParamField>
+
+## Listening to events
+
+Use the standard `addEventListener` API to listen for HotkeyPad events:
+
+```javascript
+window.addEventListener('hotkeypad:open', (event) => {
+  console.log('HotkeyPad opened')
+})
+
+window.addEventListener('hotkeypad:close', (event) => {
+  console.log('HotkeyPad closed')
+})
+```
+
+## Use cases
+
+### Track analytics
+
+Monitor how often users interact with the command palette:
+
+```javascript
+window.addEventListener('hotkeypad:open', () => {
+  analytics.track('Command Palette Opened')
+})
+
+window.addEventListener('hotkeypad:close', () => {
+  analytics.track('Command Palette Closed')
+})
+```
+
+### Pause background processes
+
+Pause animations or computationally intensive tasks while the palette is open:
+
+```javascript
+let isPaletteOpen = false
+
+window.addEventListener('hotkeypad:open', () => {
+  isPaletteOpen = true
+  // Pause video playback, animations, etc.
+  videoPlayer.pause()
+})
+
+window.addEventListener('hotkeypad:close', () => {
+  isPaletteOpen = false
+  videoPlayer.resume()
+})
+```
+
+### Update UI state
+
+Change your application's UI to indicate the palette is active:
+
+```javascript
+window.addEventListener('hotkeypad:open', () => {
+  document.body.classList.add('palette-active')
+})
+
+window.addEventListener('hotkeypad:close', () => {
+  document.body.classList.remove('palette-active')
+})
+```
+
+### Dynamic command updates
+
+Refresh commands based on the current application state when the palette opens:
+
+```javascript
+window.addEventListener('hotkeypad:open', () => {
+  // Fetch latest data
+  const currentUser = getCurrentUser()
+  
+  // Update commands based on user permissions
+  const commands = currentUser.isAdmin 
+    ? [...userCommands, ...adminCommands]
+    : userCommands
+  
+  hotkeypad.setCommands(commands)
+})
+```
+
+<Tip>
+  Updating commands on `hotkeypad:open` ensures users always see relevant, up-to-date actions.
+</Tip>
+
+## Event timing
+
+### Open event
+
+The `hotkeypad:open` event is dispatched:
+- Before the palette's opacity and visibility styles are applied
+- Before the search input receives focus (200ms delay)
+
+```javascript
+// From source: index.ts:236-243
+open() {
+  window.dispatchEvent(new CustomEvent("hotkeypad:open"))
+  
+  this.instance.style.opacity = "1"
+  this.instance.style.visibility = "visible"
+  this.instance.style.pointerEvents = "auto"
+  setTimeout(() => this.#container!.querySelector("input")!.focus(), 200)
+}
+```
+
+### Close event
+
+The `hotkeypad:close` event is dispatched:
+- Before the palette's styles are updated to hide it
+- Before the search input value is cleared
+
+```javascript
+// From source: index.ts:245-255
+close() {
+  window.dispatchEvent(new CustomEvent("hotkeypad:close"))
+  
+  this.instance.style.opacity = "0"
+  this.instance.style.visibility = "hidden"
+  this.instance.style.pointerEvents = "none"
+  // Input cleared and listeners removed
+}
+```
+
+<Note>
+  Events are dispatched synchronously. Your event handlers run before the visual state changes.
+</Note>
+
+## Cleaning up listeners
+
+Remove event listeners when they're no longer needed:
+
+```javascript
+const handleOpen = () => {
+  console.log('Opened')
+}
+
+const handleClose = () => {
+  console.log('Closed')
+}
+
+// Add listeners
+window.addEventListener('hotkeypad:open', handleOpen)
+window.addEventListener('hotkeypad:close', handleClose)
+
+// Later: remove listeners
+window.removeEventListener('hotkeypad:open', handleOpen)
+window.removeEventListener('hotkeypad:close', handleClose)
+```
+
+## Programmatic control
+
+You can manually trigger the palette to open or close, which will also dispatch the corresponding events:
+
+```javascript
+const hotkeypad = new HotKeyPad()
+
+// Programmatically open (dispatches hotkeypad:open)
+hotkeypad.open()
+
+// Programmatically close (dispatches hotkeypad:close)
+hotkeypad.close()
+```
+
+<Tip>
+  Use `hotkeypad.open()` and `hotkeypad.close()` methods to integrate the palette into custom workflows, like opening it from a button click or menu item.
+</Tip>

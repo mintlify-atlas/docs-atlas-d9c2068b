@@ -1,0 +1,164 @@
+---
+title: Configuration
+description: Configuration options and HTML data attributes for HotKeyPad
+---
+
+## Constructor options
+
+The HotKeyPad constructor accepts an optional configuration object with the following properties:
+
+### closeKey
+
+<ParamField path="closeKey" type="string" optional default="Escape">
+  The keyboard key used to close the command palette.
+</ParamField>
+
+```typescript
+const hotkeypad = new HotKeyPad({
+  closeKey: 'Escape'
+});
+```
+
+### placeholder
+
+<ParamField path="placeholder" type="string" optional default="Search command">
+  Placeholder text displayed in the search input field.
+</ParamField>
+
+```typescript
+const hotkeypad = new HotKeyPad({
+  placeholder: 'Search commands...'
+});
+```
+
+### emptyMessage
+
+<ParamField path="emptyMessage" type="string" optional default="No commands found">
+  Message displayed when the search returns no results.
+</ParamField>
+
+```typescript
+const hotkeypad = new HotKeyPad({
+  emptyMessage: 'No matching commands'
+});
+```
+
+### activationLetter
+
+<ParamField path="activationLetter" type="string" optional default="K">
+  The letter key combined with Cmd (macOS) or Ctrl (Windows/Linux) to open the palette. For example, `"K"` creates `Cmd+K` or `Ctrl+K`.
+</ParamField>
+
+```typescript
+const hotkeypad = new HotKeyPad({
+  activationLetter: 'P' // Creates Cmd+P or Ctrl+P
+});
+```
+
+### Full example
+
+```typescript
+import HotKeyPad from 'hotkeypad';
+
+const hotkeypad = new HotKeyPad({
+  closeKey: 'Escape',
+  placeholder: 'Type a command...',
+  emptyMessage: 'No results found',
+  activationLetter: 'K'
+});
+```
+
+## HTML data attributes
+
+You can also configure HotKeyPad using HTML data attributes on the root element. These attributes take precedence over constructor options.
+
+### Required element
+
+HotKeyPad requires an element with the id `hotkeypad` to exist in the DOM:
+
+```html
+<div id="hotkeypad"></div>
+```
+
+If this element is not found, the constructor will throw an error:
+```
+Error: HotKeyPad instance not found in the DOM
+```
+
+### data-placeholder
+
+<ParamField path="data-placeholder" type="string" optional>
+  Sets the placeholder text for the search input. Overrides the `placeholder` constructor option.
+</ParamField>
+
+```html
+<div id="hotkeypad" data-placeholder="Search documentation..."></div>
+```
+
+### data-activation-letter
+
+<ParamField path="data-activation-letter" type="string" optional>
+  Sets the activation letter key. Overrides the `activationLetter` constructor option. Value is automatically converted to uppercase.
+</ParamField>
+
+```html
+<div id="hotkeypad" data-activation-letter="P"></div>
+```
+
+### data-close-key
+
+<ParamField path="data-close-key" type="string" optional>
+  Sets the key used to close the palette. Overrides the `closeKey` constructor option. Value is automatically converted to uppercase.
+</ParamField>
+
+```html
+<div id="hotkeypad" data-close-key="Escape"></div>
+```
+
+### Example with data attributes
+
+```html
+<div 
+  id="hotkeypad" 
+  data-placeholder="Find a command..."
+  data-activation-letter="K"
+  data-close-key="Escape"
+></div>
+```
+
+```typescript
+// Data attributes take precedence
+const hotkeypad = new HotKeyPad({
+  placeholder: 'This will be overridden'
+});
+// Actual placeholder will be "Find a command..."
+```
+
+## Dark mode support
+
+HotKeyPad automatically detects dark mode by observing the `dark` class on the root element:
+
+```html
+<!-- Light mode -->
+<div id="hotkeypad"></div>
+
+<!-- Dark mode -->
+<div id="hotkeypad" class="dark"></div>
+```
+
+When the `dark` class is present, icon colors are automatically adjusted from black to white.
+
+## Custom footer
+
+You can provide a custom footer by including a template element with the id `hotkeypad-footer`:
+
+```html
+<template id="hotkeypad-footer">
+  <p>Press <kbd>Enter</kbd> to execute</p>
+  <p>Custom footer content</p>
+</template>
+
+<div id="hotkeypad"></div>
+```
+
+If no custom footer template is found, HotKeyPad will render the default footer with keyboard navigation hints.

@@ -1,0 +1,110 @@
+---
+title: Installation
+description: Install HotkeyPad using npm, yarn, pnpm, or via CDN
+---
+
+# Installation
+
+HotkeyPad can be installed via your favorite package manager or loaded directly from a CDN.
+
+## Package managers
+
+Install HotkeyPad using npm, yarn, or pnpm:
+
+<CodeGroup>
+
+```bash npm
+npm install hotkeypad
+```
+
+```bash yarn
+yarn add hotkeypad
+```
+
+```bash pnpm
+pnpm add hotkeypad
+```
+
+</CodeGroup>
+
+<Note>
+  HotkeyPad has **zero dependencies**, so this is all you need to install.
+</Note>
+
+## CDN
+
+You can also use HotkeyPad directly from a CDN without any build step:
+
+<CodeGroup>
+
+```html unpkg
+<script type="module">
+  import HotKeyPad from 'https://unpkg.com/hotkeypad?module'
+  const hotkeypad = new HotKeyPad()
+</script>
+```
+
+```html jsDelivr
+<script type="module">
+  import HotKeyPad from 'https://cdn.jsdelivr.net/npm/hotkeypad/+esm'
+  const hotkeypad = new HotKeyPad()
+</script>
+```
+
+</CodeGroup>
+
+<Tip>
+  Using the CDN is perfect for prototyping or adding HotkeyPad to static sites without a build process.
+</Tip>
+
+## Importing in your project
+
+Once installed, import HotkeyPad into your JavaScript or TypeScript file:
+
+<CodeGroup>
+
+```javascript ES6
+import HotKeyPad from 'hotkeypad'
+```
+
+```javascript CommonJS
+const HotKeyPad = require('hotkeypad')
+```
+
+```typescript TypeScript
+import HotKeyPad from 'hotkeypad'
+import type { HotKeyPadCommand, HotKeyPadOptionsProps } from 'hotkeypad'
+```
+
+</CodeGroup>
+
+## Requirements
+
+HotkeyPad works in all modern browsers that support:
+
+- ES6 modules
+- Custom events
+- MutationObserver API
+- CSS variables
+
+<Warning>
+  Internet Explorer is not supported. HotkeyPad requires a modern browser environment.
+</Warning>
+
+## Verify installation
+
+To verify that HotkeyPad is installed correctly, try importing it:
+
+```javascript
+import HotKeyPad from 'hotkeypad'
+
+console.log(HotKeyPad) // Should output the HotKeyPad class
+```
+
+## Next steps
+
+Now that you have HotkeyPad installed, let's build your first keyboard shortcut interface.
+
+<Card title="Quickstart" icon="rocket" href="/quickstart">
+  Create a working keyboard shortcut in under 5 minutes
+</Card>

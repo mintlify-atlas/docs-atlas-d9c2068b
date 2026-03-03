@@ -1,0 +1,136 @@
+---
+title: Keyboard navigation
+description: Navigate the HotkeyPad command palette efficiently using arrow keys, Tab, Enter, and Escape
+---
+
+HotkeyPad is designed for keyboard-first interaction. Users can navigate through commands, make selections, and close the palette entirely with the keyboard.
+
+## Opening the palette
+
+By default, HotkeyPad opens with **Cmd+K** (macOS) or **Ctrl+K** (Windows/Linux).
+
+<Note>
+  The activation key is automatically detected based on the user's operating system.
+</Note>
+
+You can customize the activation letter:
+
+```javascript
+const hotkeypad = new HotKeyPad({
+  activationLetter: "P"  // Changes to Cmd+P or Ctrl+P
+})
+```
+
+## Navigating commands
+
+Once the palette is open, use these keys to navigate:
+
+<ParamField path="ArrowDown" type="key">
+  Move to the next command in the list. Wraps to the first command when at the bottom.
+</ParamField>
+
+<ParamField path="ArrowUp" type="key">
+  Move to the previous command. Wraps to the last command when at the top.
+</ParamField>
+
+<ParamField path="Tab" type="key">
+  Move to the next command (same as ArrowDown). Provides an alternative navigation method.
+</ParamField>
+
+<Tip>
+  The active command is highlighted and automatically scrolls into view for easy visibility.
+</Tip>
+
+## Selecting commands
+
+<ParamField path="Enter" type="key">
+  Executes the currently highlighted command and closes the palette.
+</ParamField>
+
+You can also:
+- **Click** any command to execute it
+- Use the command's **hotkey combination** (e.g., Ctrl+S) while the palette is open
+
+## Closing the palette
+
+<ParamField path="Escape" type="key">
+  Closes the command palette without executing any command. This is the default close key.
+</ParamField>
+
+Customize the close key:
+
+```javascript
+const hotkeypad = new HotKeyPad({
+  closeKey: "q"  // Press 'q' to close instead of Escape
+})
+```
+
+Alternatively:
+- Press the **activation key** again (Cmd+K or Ctrl+K) to toggle close
+- Click the **backdrop** (area outside the palette)
+
+## Mouse interaction
+
+While HotkeyPad is keyboard-focused, it supports mouse interaction:
+
+- **Hover** over a command to highlight it
+- **Click** a command to execute it
+- **Click the backdrop** to close the palette
+
+<Note>
+  When you hover over a command with your mouse, it becomes the active selection. Keyboard navigation will continue from that command.
+</Note>
+
+## Search and filter
+
+The search input is automatically focused when the palette opens. Start typing to filter commands:
+
+```
+Type: "save"
+Results: Shows only commands with "save" in the title
+```
+
+Features:
+- Case-insensitive search
+- Matches partial text in command titles
+- Hides sections with no matching commands
+- Shows an empty state message when no results found
+
+<Tip>
+  Combine search with keyboard navigation: type to filter, then use arrow keys to select.
+</Tip>
+
+## Navigation behavior
+
+### Circular navigation
+
+Navigation wraps around at the boundaries:
+- ArrowDown on the last item → jumps to first item
+- ArrowUp on the first item → jumps to last item
+- Tab on the last item → jumps to first item
+
+### Active state management
+
+HotkeyPad maintains an active command indicator:
+- First command is active by default when palette opens
+- Arrow keys and Tab update the active state
+- Mouse hover overrides keyboard selection
+- Active command scrolls into view automatically
+
+### Input focus
+
+The search input receives focus automatically:
+- When the palette opens (after 200ms)
+- Keyboard navigation works even when input is focused
+- No need to blur the input to use arrow keys
+
+## Example workflow
+
+<Accordion title="Typical user interaction">
+  1. User presses **Cmd+K** to open the palette
+  2. Search input is automatically focused
+  3. User types **"new"** to filter commands
+  4. Press **ArrowDown** to navigate to "New project"
+  5. Press **Enter** to execute the command
+  6. Palette closes and handler runs
+</Accordion>

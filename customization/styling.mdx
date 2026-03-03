@@ -1,0 +1,154 @@
+---
+title: Styling
+description: Customize HotkeyPad appearance using CSS variables and data attribute selectors
+---
+
+HotkeyPad provides extensive styling options through CSS variables and data attribute selectors, allowing you to customize the appearance to match your design system.
+
+## CSS variables
+
+HotkeyPad exposes 7 CSS variables that control colors and typography. These variables automatically adapt for light and dark modes.
+
+### Available variables
+
+```css
+#hotkeypad {
+  --hotkeypad-bg-kbd: #f9fafb;
+  --hotkeypad-bg-backdrop: #fff;
+  --hotkeypad-bg-container: #fff;
+  --hotkeypad-bg-item-hover: #f3f4f6;
+  --hotkeypad-border-container: #d1d5db;
+  --hotkeypad-border-container-hover: #9ca3af;
+  --hotkeypad-fg-muted: #4b5563;
+  --hotkeypad-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+```
+
+| Variable | Description | Light default | Dark default |
+|----------|-------------|---------------|---------------|
+| `--hotkeypad-bg-kbd` | Background color for keyboard shortcuts | `#f9fafb` | `#1f2937` |
+| `--hotkeypad-bg-backdrop` | Background color for the backdrop overlay | `#fff` | `#000` |
+| `--hotkeypad-bg-container` | Background color for the main container | `#fff` | `#1f2937` |
+| `--hotkeypad-bg-item-hover` | Background color for hovered items | `#f3f4f6` | `#161e2e` |
+| `--hotkeypad-border-container` | Border color for the container | `#d1d5db` | `#374151` |
+| `--hotkeypad-border-container-hover` | Border color on hover | `#9ca3af` | `#9ca3af` |
+| `--hotkeypad-fg-muted` | Text color for muted elements | `#4b5563` | `#d1d5db` |
+| `--hotkeypad-font-mono` | Font family for keyboard shortcuts | System monospace | System monospace |
+
+### Custom color example
+
+<CodeGroup>
+
+```css Custom colors
+#hotkeypad {
+  --hotkeypad-bg-container: #1a1a2e;
+  --hotkeypad-bg-item-hover: #16213e;
+  --hotkeypad-border-container: #0f3460;
+  --hotkeypad-fg-muted: #e94560;
+}
+```
+
+```css Brand colors
+#hotkeypad {
+  --hotkeypad-bg-container: rgb(var(--background));
+  --hotkeypad-border-container: rgb(var(--border));
+  --hotkeypad-fg-muted: rgb(var(--foreground));
+}
+```
+
+</CodeGroup>
+
+<Note>
+CSS variables are scoped to `#hotkeypad`, so they won't affect other parts of your application.
+</Note>
+
+## Data attribute selectors
+
+HotkeyPad uses data attributes to identify different parts of the interface. You can target these attributes to apply custom styles.
+
+### Available selectors
+
+```css
+#hotkeypad [data-backdrop] { }      /* Backdrop overlay */
+#hotkeypad [data-container] { }     /* Main container */
+#hotkeypad [data-sections] { }      /* Sections wrapper */
+#hotkeypad [data-section] { }       /* Individual section */
+#hotkeypad [data-empty] { }         /* Empty state message */
+#hotkeypad [data-hotkey] { }        /* Command item */
+#hotkeypad [data-hotkey][data-active] { } /* Active command item */
+```
+
+### Styling examples
+
+<Tabs>
+  <Tab title="Rounded corners">
+    ```css
+    #hotkeypad [data-container] {
+      border-radius: 1rem;
+    }
+    
+    #hotkeypad [data-hotkey] div span {
+      border-radius: 0.5rem;
+    }
+    ```
+  </Tab>
+  <Tab title="Custom backdrop">
+    ```css
+    #hotkeypad [data-backdrop] {
+      backdrop-filter: blur(8px);
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+    ```
+  </Tab>
+  <Tab title="Active item accent">
+    ```css
+    #hotkeypad [data-hotkey][data-active]::before {
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      width: 4px;
+    }
+    ```
+  </Tab>
+  <Tab title="Section headers">
+    ```css
+    #hotkeypad [data-section] h4 {
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      opacity: 0.6;
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Advanced styling
+
+You can combine CSS variables with data attributes for more sophisticated customizations.
+
+```css Advanced example
+/* Custom glass morphism effect */
+#hotkeypad [data-container] {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* Gradient text for section headers */
+#hotkeypad [data-section] h4 {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animated active state */
+#hotkeypad [data-hotkey][data-active] {
+  transform: translateX(4px);
+  transition: transform 0.2s ease;
+}
+```
+
+<Tip>
+Use your browser's DevTools to inspect HotkeyPad elements and experiment with styles in real-time.
+</Tip>

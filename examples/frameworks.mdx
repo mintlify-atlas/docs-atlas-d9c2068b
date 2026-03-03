@@ -1,0 +1,558 @@
+---
+title: Framework integrations
+description: Use HotkeyPad with React, Vue, Svelte, and other JavaScript frameworks
+---
+
+HotkeyPad is framework-agnostic and works seamlessly with any JavaScript framework. This guide shows you how to integrate it with popular frameworks.
+
+## React
+
+### Basic setup
+
+<Tabs>
+  <Tab title="App.jsx">
+    ```jsx
+    import { useEffect } from 'react'
+    import HotKeyPad from 'hotkeypad'
+    import 'hotkeypad/dist/style.css'
+
+    function App() {
+      useEffect(() => {
+        const hotkeypad = new HotKeyPad({
+          placeholder: 'Search commands...',
+          activationLetter: 'K'
+        })
+
+        hotkeypad.setCommands([
+          {
+            id: 'home',
+            title: 'Go to Home',
+            icon: 'home',
+            hotkey: `${hotkeypad.activationKey} + H`,
+            section: 'Navigation',
+            handler: () => {
+              window.location.href = '/'
+            }
+          },
+          {
+            id: 'about',
+            title: 'Go to About',
+            icon: 'aboutdotme',
+            hotkey: `${hotkeypad.activationKey} + A`,
+            section: 'Navigation',
+            handler: () => {
+              window.location.href = '/about'
+            }
+          }
+        ])
+      }, [])
+
+      return (
+        <>
+          <div id="hotkeypad"></div>
+          <div className="app">
+            <h1>My React App</h1>
+            <p>Press Cmd+K or Ctrl+K to open commands</p>
+          </div>
+        </>
+      )
+    }
+
+    export default App
+    ```
+  </Tab>
+</Tabs>
+
+### Custom React hook
+
+Create a reusable hook for better integration:
+
+<Tabs>
+  <Tab title="useHotKeyPad.js">
+    ```javascript
+    import { useEffect, useRef } from 'react'
+    import HotKeyPad from 'hotkeypad'
+
+    export function useHotKeyPad(commands, options = {}) {
+      const hotkeypadRef = useRef(null)
+
+      useEffect(() => {
+        if (!hotkeypadRef.current) {
+          hotkeypadRef.current = new HotKeyPad({
+            placeholder: 'Search commands...',
+            activationLetter: 'K',
+            ...options
+          })
+        }
+
+        if (commands && commands.length > 0) {
+          hotkeypadRef.current.setCommands(commands)
+        }
+
+        return () => {
+          // Cleanup if needed
+        }
+      }, [commands, options])
+
+      return hotkeypadRef.current
+    }
+    ```
+  </Tab>
+  <Tab title="App.jsx">
+    ```jsx
+    import { useHotKeyPad } from './hooks/useHotKeyPad'
+    import { useNavigate } from 'react-router-dom'
+
+    function App() {
+      const navigate = useNavigate()
+
+      const commands = [
+        {
+          id: 'home',
+          title: 'Go to Home',
+          icon: 'home',
+          hotkey: 'Ctrl + H',
+          section: 'Navigation',
+          handler: () => navigate('/')
+        },
+        {
+          id: 'projects',
+          title: 'Go to Projects',
+          icon: 'folder',
+          hotkey: 'Ctrl + P',
+          section: 'Navigation',
+          handler: () => navigate('/projects')
+        },
+        {
+          id: 'theme',
+          title: 'Toggle Dark Mode',
+          icon: 'darkreader',
+          hotkey: 'Ctrl + D',
+          section: 'Settings',
+          handler: () => {
+            document.documentElement.classList.toggle('dark')
+          }
+        }
+      ]
+
+      useHotKeyPad(commands)
+
+      return (
+        <>
+          <div id="hotkeypad"></div>
+          <div className="app">
+            <h1>My React App</h1>
+          </div>
+        </>
+      )
+    }
+
+    export default App
+    ```
+  </Tab>
+</Tabs>
+
+## Vue
+
+### Vue 3 Composition API
+
+<Tabs>
+  <Tab title="App.vue">
+    ```vue
+    <template>
+      <div id="hotkeypad"></div>
+      <div class="app">
+        <h1>My Vue App</h1>
+        <p>Press Cmd+K or Ctrl+K to open commands</p>
+      </div>
+    </template>
+
+    <script setup>
+    import { onMounted } from 'vue'
+    import { useRouter } from 'vue-router'
+    import HotKeyPad from 'hotkeypad'
+    import 'hotkeypad/dist/style.css'
+
+    const router = useRouter()
+
+    onMounted(() => {
+      const hotkeypad = new HotKeyPad({
+        placeholder: 'Search commands...',
+        activationLetter: 'K'
+      })
+
+      hotkeypad.setCommands([
+        {
+          id: 'home',
+          title: 'Go to Home',
+          icon: 'home',
+          hotkey: `${hotkeypad.activationKey} + H`,
+          section: 'Navigation',
+          handler: () => {
+            router.push('/')
+          }
+        },
+        {
+          id: 'about',
+          title: 'Go to About',
+          icon: 'aboutdotme',
+          hotkey: `${hotkeypad.activationKey} + A`,
+          section: 'Navigation',
+          handler: () => {
+            router.push('/about')
+          }
+        },
+        {
+          id: 'theme',
+          title: 'Toggle Dark Mode',
+          icon: 'darkreader',
+          hotkey: `${hotkeypad.activationKey} + D`,
+          section: 'Settings',
+          handler: () => {
+            document.documentElement.classList.toggle('dark')
+          }
+        }
+      ])
+    })
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+### Vue 3 composable
+
+Create a composable for reusability:
+
+<Tabs>
+  <Tab title="useHotKeyPad.js">
+    ```javascript
+    import { onMounted, onBeforeUnmount, ref } from 'vue'
+    import HotKeyPad from 'hotkeypad'
+
+    export function useHotKeyPad(commands, options = {}) {
+      const hotkeypad = ref(null)
+
+      onMounted(() => {
+        hotkeypad.value = new HotKeyPad({
+          placeholder: 'Search commands...',
+          activationLetter: 'K',
+          ...options
+        })
+
+        if (commands && commands.length > 0) {
+          hotkeypad.value.setCommands(commands)
+        }
+      })
+
+      onBeforeUnmount(() => {
+        // Cleanup if needed
+      })
+
+      return { hotkeypad }
+    }
+    ```
+  </Tab>
+  <Tab title="App.vue">
+    ```vue
+    <template>
+      <div id="hotkeypad"></div>
+      <div class="app">
+        <h1>My Vue App</h1>
+      </div>
+    </template>
+
+    <script setup>
+    import { useRouter } from 'vue-router'
+    import { useHotKeyPad } from './composables/useHotKeyPad'
+
+    const router = useRouter()
+
+    const commands = [
+      {
+        id: 'home',
+        title: 'Go to Home',
+        icon: 'home',
+        hotkey: 'Ctrl + H',
+        section: 'Navigation',
+        handler: () => router.push('/')
+      },
+      {
+        id: 'projects',
+        title: 'Go to Projects',
+        icon: 'folder',
+        hotkey: 'Ctrl + P',
+        section: 'Navigation',
+        handler: () => router.push('/projects')
+      }
+    ]
+
+    useHotKeyPad(commands)
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+## Svelte
+
+### Basic setup
+
+<Tabs>
+  <Tab title="App.svelte">
+    ```svelte
+    <script>
+      import { onMount } from 'svelte'
+      import { goto } from '$app/navigation'
+      import HotKeyPad from 'hotkeypad'
+      import 'hotkeypad/dist/style.css'
+
+      onMount(() => {
+        const hotkeypad = new HotKeyPad({
+          placeholder: 'Search commands...',
+          activationLetter: 'K'
+        })
+
+        hotkeypad.setCommands([
+          {
+            id: 'home',
+            title: 'Go to Home',
+            icon: 'home',
+            hotkey: `${hotkeypad.activationKey} + H`,
+            section: 'Navigation',
+            handler: () => {
+              goto('/')
+            }
+          },
+          {
+            id: 'about',
+            title: 'Go to About',
+            icon: 'aboutdotme',
+            hotkey: `${hotkeypad.activationKey} + A`,
+            section: 'Navigation',
+            handler: () => {
+              goto('/about')
+            }
+          },
+          {
+            id: 'theme',
+            title: 'Toggle Dark Mode',
+            icon: 'darkreader',
+            hotkey: `${hotkeypad.activationKey} + D`,
+            section: 'Settings',
+            handler: () => {
+              document.documentElement.classList.toggle('dark')
+            }
+          }
+        ])
+      })
+    </script>
+
+    <div id="hotkeypad"></div>
+    <div class="app">
+      <h1>My Svelte App</h1>
+      <p>Press Cmd+K or Ctrl+K to open commands</p>
+    </div>
+    ```
+  </Tab>
+</Tabs>
+
+## Next.js
+
+### App Router (Next.js 13+)
+
+<Tabs>
+  <Tab title="components/HotKeyPadProvider.jsx">
+    ```jsx
+    'use client'
+
+    import { useEffect } from 'react'
+    import { useRouter } from 'next/navigation'
+    import HotKeyPad from 'hotkeypad'
+    import 'hotkeypad/dist/style.css'
+
+    export default function HotKeyPadProvider() {
+      const router = useRouter()
+
+      useEffect(() => {
+        const hotkeypad = new HotKeyPad({
+          placeholder: 'Search commands...',
+          activationLetter: 'K'
+        })
+
+        hotkeypad.setCommands([
+          {
+            id: 'home',
+            title: 'Go to Home',
+            icon: 'home',
+            hotkey: `${hotkeypad.activationKey} + H`,
+            section: 'Navigation',
+            handler: () => router.push('/')
+          },
+          {
+            id: 'blog',
+            title: 'Go to Blog',
+            icon: 'blogger',
+            hotkey: `${hotkeypad.activationKey} + B`,
+            section: 'Navigation',
+            handler: () => router.push('/blog')
+          },
+          {
+            id: 'docs',
+            title: 'Go to Docs',
+            icon: 'readthedocs',
+            hotkey: `${hotkeypad.activationKey} + D`,
+            section: 'Navigation',
+            handler: () => router.push('/docs')
+          },
+          {
+            id: 'theme',
+            title: 'Toggle Dark Mode',
+            icon: 'darkreader',
+            hotkey: `${hotkeypad.activationKey} + T`,
+            section: 'Settings',
+            handler: () => {
+              document.documentElement.classList.toggle('dark')
+            }
+          }
+        ])
+      }, [])
+
+      return <div id="hotkeypad"></div>
+    }
+    ```
+  </Tab>
+  <Tab title="app/layout.jsx">
+    ```jsx
+    import HotKeyPadProvider from '@/components/HotKeyPadProvider'
+
+    export default function RootLayout({ children }) {
+      return (
+        <html lang="en">
+          <body>
+            <HotKeyPadProvider />
+            {children}
+          </body>
+        </html>
+      )
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Nuxt
+
+### Nuxt 3 plugin
+
+<Tabs>
+  <Tab title="plugins/hotkeypad.client.js">
+    ```javascript
+    import HotKeyPad from 'hotkeypad'
+    import 'hotkeypad/dist/style.css'
+
+    export default defineNuxtPlugin(() => {
+      const router = useRouter()
+
+      onMounted(() => {
+        const hotkeypad = new HotKeyPad({
+          placeholder: 'Search commands...',
+          activationLetter: 'K'
+        })
+
+        hotkeypad.setCommands([
+          {
+            id: 'home',
+            title: 'Go to Home',
+            icon: 'home',
+            hotkey: `${hotkeypad.activationKey} + H`,
+            section: 'Navigation',
+            handler: () => {
+              router.push('/')
+            }
+          },
+          {
+            id: 'about',
+            title: 'Go to About',
+            icon: 'aboutdotme',
+            hotkey: `${hotkeypad.activationKey} + A`,
+            section: 'Navigation',
+            handler: () => {
+              router.push('/about')
+            }
+          },
+          {
+            id: 'theme',
+            title: 'Toggle Dark Mode',
+            icon: 'darkreader',
+            hotkey: `${hotkeypad.activationKey} + D`,
+            section: 'Settings',
+            handler: () => {
+              document.documentElement.classList.toggle('dark')
+            }
+          }
+        ])
+      })
+    })
+    ```
+  </Tab>
+  <Tab title="app.vue">
+    ```vue
+    <template>
+      <div>
+        <div id="hotkeypad"></div>
+        <NuxtPage />
+      </div>
+    </template>
+    ```
+  </Tab>
+</Tabs>
+
+## SvelteKit
+
+<Tabs>
+  <Tab title="routes/+layout.svelte">
+    ```svelte
+    <script>
+      import { onMount } from 'svelte'
+      import { goto } from '$app/navigation'
+      import HotKeyPad from 'hotkeypad'
+      import 'hotkeypad/dist/style.css'
+
+      onMount(() => {
+        const hotkeypad = new HotKeyPad({
+          placeholder: 'Search commands...',
+          activationLetter: 'K'
+        })
+
+        hotkeypad.setCommands([
+          {
+            id: 'home',
+            title: 'Go to Home',
+            icon: 'home',
+            hotkey: `${hotkeypad.activationKey} + H`,
+            section: 'Navigation',
+            handler: () => goto('/')
+          },
+          {
+            id: 'about',
+            title: 'Go to About',
+            icon: 'aboutdotme',
+            hotkey: `${hotkeypad.activationKey} + A`,
+            section: 'Navigation',
+            handler: () => goto('/about')
+          },
+          {
+            id: 'blog',
+            title: 'Go to Blog',
+            icon: 'blogger',
+            hotkey: `${hotkeypad.activationKey} + B`,
+            section: 'Navigation',
+            handler: () => goto('/blog')
+          }
+        ])
+      })
+    </script>
+
+    <div id="hotkeypad"></div>
+    <slot />
+    ```
+  </Tab>
+</Tabs>

@@ -1,0 +1,157 @@
+---
+title: HotKeyPad class
+description: The main class for creating and managing a command palette interface
+---
+
+## Constructor
+
+Creates a new HotKeyPad instance.
+
+```typescript
+new HotKeyPad(options?: HotKeyPadOptionsProps)
+```
+
+<ParamField path="options" type="HotKeyPadOptionsProps" optional>
+  Configuration options for the HotKeyPad instance. See [Configuration](/api/configuration) for all available options.
+</ParamField>
+
+### Example
+
+```typescript
+import HotKeyPad from 'hotkeypad';
+
+const hotkeypad = new HotKeyPad({
+  placeholder: 'Search commands...',
+  activationLetter: 'K',
+  closeKey: 'Escape',
+  emptyMessage: 'No commands available'
+});
+```
+
+## Methods
+
+### setCommands()
+
+Sets the commands to display in the command palette.
+
+```typescript
+setCommands(commands: HotKeyPadCommand[]): void
+```
+
+<ParamField path="commands" type="HotKeyPadCommand[]" required>
+  Array of command objects. Each command must have an `id`, `title`, `hotkey`, and `handler`. See [Types](/api/types#hotkeypadcommand) for the complete interface.
+</ParamField>
+
+#### Example
+
+```typescript
+hotkeypad.setCommands([
+  {
+    id: 'new-file',
+    title: 'Create new file',
+    icon: 'file',
+    hotkey: 'Cmd+N',
+    section: 'File',
+    handler: (instance) => {
+      console.log('Creating new file...');
+    }
+  },
+  {
+    id: 'save',
+    title: 'Save file',
+    icon: 'save',
+    hotkey: 'Cmd+S',
+    section: 'File',
+    handler: (instance) => {
+      console.log('Saving file...');
+    }
+  }
+]);
+```
+
+### open()
+
+Opens the command palette interface.
+
+```typescript
+open(): void
+```
+
+This method:
+- Makes the palette visible
+- Dispatches a `hotkeypad:open` custom event
+- Focuses the search input
+
+#### Example
+
+```typescript
+// Open programmatically
+hotkeypad.open();
+
+// Listen for open events
+window.addEventListener('hotkeypad:open', () => {
+  console.log('Command palette opened');
+});
+```
+
+### close()
+
+Closes the command palette interface.
+
+```typescript
+close(): void
+```
+
+This method:
+- Hides the palette
+- Dispatches a `hotkeypad:close` custom event
+- Clears the search input
+- Removes event listeners
+
+#### Example
+
+```typescript
+// Close programmatically
+hotkeypad.close();
+
+// Listen for close events
+window.addEventListener('hotkeypad:close', () => {
+  console.log('Command palette closed');
+});
+```
+
+## Properties
+
+### activationKey
+
+Returns the activation key based on the user's operating system.
+
+```typescript
+get activationKey(): string
+```
+
+<ResponseField name="activationKey" type="string">
+  Returns `"Cmd"` on macOS or `"Ctrl"` on other platforms. This is automatically detected based on the user agent.
+</ResponseField>
+
+#### Example
+
+```typescript
+const key = hotkeypad.activationKey;
+console.log(key); // "Cmd" on macOS, "Ctrl" on Windows/Linux
+
+// Use it in your UI
+const shortcut = `${hotkeypad.activationKey}+K`;
+```
+
+### instance
+
+Reference to the root HTML element with id `hotkeypad`.
+
+```typescript
+instance: HTMLElement
+```
+
+<ResponseField name="instance" type="HTMLElement">
+  The DOM element that serves as the container for the entire HotKeyPad interface.
+</ResponseField>

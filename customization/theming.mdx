@@ -1,0 +1,307 @@
+---
+title: Theming
+description: Configure light and dark mode support with automatic theme detection
+---
+
+HotkeyPad includes built-in support for light and dark themes with automatic detection and color adaptation.
+
+## How dark mode works
+
+HotkeyPad uses a `MutationObserver` to watch for class changes on the `#hotkeypad` element. When the `dark` class is added or removed, it automatically updates the CSS variables and icon colors.
+
+```typescript Source: index.ts:17,49-54,80-87
+// Observer initialization
+#observer = new MutationObserver(this.#observeClassChanges.bind(this))
+
+// Observe class changes on the hotkeypad instance
+this.#observer.observe(this.instance, {
+  attributes: true,
+  attributeFilter: ["class"],
+  childList: false,
+  characterData: false
+})
+
+// Handle theme changes
+#observeClassChanges(event: MutationRecord[]) {
+  const { attributeName, target } = event[0]
+  if (attributeName === "class") {
+    if ((target as Element).classList.contains("dark")) this.#svgIconColor = "white"
+    else this.#svgIconColor = "black"
+    this.#renderCommands()
+  }
+}
+```
+
+<Note>
+The observer watches for the `dark` class on `#hotkeypad` and re-renders commands with the appropriate icon color.
+</Note>
+
+## Enabling dark mode
+
+Add the `dark` class to the `#hotkeypad` element to enable dark mode:
+
+<CodeGroup>
+
+```javascript Manual toggle
+const hotkeypad = new HotKeyPad()
+
+// Enable dark mode
+document.getElementById('hotkeypad').classList.add('dark')
+
+// Disable dark mode
+document.getElementById('hotkeypad').classList.remove('dark')
+```
+
+```javascript Theme toggle function
+function toggleTheme() {
+  const hotkeypad = document.getElementById('hotkeypad')
+  hotkeypad.classList.toggle('dark')
+}
+
+// Add to a command
+hotkeypad.setCommands([{
+  id: "theme",
+  title: "Toggle Theme",
+  icon: "theme",
+  hotkey: "Ctrl + T",
+  handler: toggleTheme
+}])
+```
+
+</CodeGroup>
+
+## Automatic theme detection
+
+Integrate HotkeyPad with your site's theme system:
+
+<Tabs>
+  <Tab title="System preference">
+    ```javascript
+    const hotkeypad = document.getElementById('hotkeypad')
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    
+    // Set initial theme
+    if (darkModeQuery.matches) {
+      hotkeypad.classList.add('dark')
+    }
+    
+    // Listen for changes
+    darkModeQuery.addEventListener('change', (e) => {
+      if (e.matches) {
+        hotkeypad.classList.add('dark')
+      } else {
+        hotkeypad.classList.remove('dark')
+      }
+    })
+    ```
+  </Tab>
+  <Tab title="LocalStorage sync">
+    ```javascript
+    const hotkeypad = document.getElementById('hotkeypad')
+    const savedTheme = localStorage.getItem('theme')
+    
+    // Apply saved theme
+    if (savedTheme === 'dark') {
+      hotkeypad.classList.add('dark')
+    }
+    
+    // Sync with theme changes
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'theme') {
+        if (e.newValue === 'dark') {
+          hotkeypad.classList.add('dark')
+        } else {
+          hotkeypad.classList.remove('dark')
+        }
+      }
+    })
+    ```
+  </Tab>
+  <Tab title="React integration">
+    ```jsx
+    import { useEffect } from 'react'
+    import HotKeyPad from 'hotkeypad'
+    
+    function App() {
+      const [theme, setTheme] = useState('light')
+      
+      useEffect(() => {
+        const hotkeypad = document.getElementById('hotkeypad')
+        
+        if (theme === 'dark') {
+          hotkeypad?.classList.add('dark')
+        } else {
+          hotkeypad?.classList.remove('dark')
+        }
+      }, [theme])
+      
+      return (
+        <div>
+          <div id="hotkeypad"></div>
+          <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+            Toggle Theme
+          </button>
+        </div>
+      )
+    }
+    ```
+  </Tab>
+  <Tab title="Next.js (next-themes)">
+    ```jsx
+    import { useTheme } from 'next-themes'
+    import { useEffect } from 'react'
+    
+    export default function HotkeyPadWrapper() {
+      const { theme } = useTheme()
+      
+      useEffect(() => {
+        const hotkeypad = document.getElementById('hotkeypad')
+        
+        if (theme === 'dark') {
+          hotkeypad?.classList.add('dark')
+        } else {
+          hotkeypad?.classList.remove('dark')
+        }
+      }, [theme])
+      
+      return <div id="hotkeypad"></div>
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Default theme colors
+
+HotkeyPad ships with carefully crafted color palettes for both themes:
+
+### Light mode
+
+```css Light theme variables
+#hotkeypad {
+  --hotkeypad-bg-kbd: #f9fafb;            /* Gray 50 */
+  --hotkeypad-bg-backdrop: #fff;           /* White */
+  --hotkeypad-bg-container: #fff;          /* White */
+  --hotkeypad-bg-item-hover: #f3f4f6;     /* Gray 100 */
+  --hotkeypad-border-container: #d1d5db;   /* Gray 300 */
+  --hotkeypad-border-container-hover: #9ca3af; /* Gray 400 */
+  --hotkeypad-fg-muted: #4b5563;          /* Gray 600 */
+}
+```
+
+### Dark mode
+
+```css Dark theme variables
+#hotkeypad.dark {
+  --hotkeypad-bg-kbd: #1f2937;            /* Gray 800 */
+  --hotkeypad-bg-backdrop: #000;           /* Black */
+  --hotkeypad-bg-container: #1f2937;      /* Gray 800 */
+  --hotkeypad-bg-item-hover: #161e2e;     /* Darker gray */
+  --hotkeypad-border-container: #374151;   /* Gray 700 */
+  --hotkeypad-border-container-hover: #9ca3af; /* Gray 400 */
+  --hotkeypad-fg-muted: #d1d5db;          /* Gray 300 */
+}
+```
+
+## Custom theme colors
+
+Override the default colors for either theme:
+
+<CodeGroup>
+
+```css Custom light theme
+#hotkeypad {
+  --hotkeypad-bg-container: #ffffff;
+  --hotkeypad-border-container: #e0e0e0;
+  --hotkeypad-fg-muted: #333333;
+}
+```
+
+```css Custom dark theme
+#hotkeypad.dark {
+  --hotkeypad-bg-container: #0a0a0a;
+  --hotkeypad-border-container: #2a2a2a;
+  --hotkeypad-fg-muted: #e0e0e0;
+}
+```
+
+```css Brand colors
+#hotkeypad {
+  --hotkeypad-border-container: rgb(var(--primary));
+  --hotkeypad-fg-muted: rgb(var(--foreground));
+}
+
+#hotkeypad.dark {
+  --hotkeypad-border-container: rgb(var(--primary-dark));
+  --hotkeypad-fg-muted: rgb(var(--foreground-dark));
+}
+```
+
+</CodeGroup>
+
+## Icon color adaptation
+
+When using Simple Icons, HotkeyPad automatically adjusts icon colors based on the theme:
+
+- **Light mode**: Icons use black (`#000000`)
+- **Dark mode**: Icons use white (`#ffffff`)
+
+This happens automatically when the `dark` class is toggled:
+
+```typescript How icon colors update
+// Light mode
+icon: "github" → https://cdn.simpleicons.org/github/black
+
+// Dark mode (with .dark class)
+icon: "github" → https://cdn.simpleicons.org/github/white
+```
+
+<Tip>
+For custom SVG icons, use `currentColor` in fills and strokes to automatically inherit the theme's text color.
+</Tip>
+
+## Complete theme example
+
+Here's a full implementation with theme persistence:
+
+```javascript Complete theme system
+const hotkeypad = new HotKeyPad()
+
+// Get saved theme or system preference
+function getInitialTheme() {
+  const saved = localStorage.getItem('theme')
+  if (saved) return saved
+  
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light'
+}
+
+// Apply theme
+function applyTheme(theme) {
+  const element = document.getElementById('hotkeypad')
+  
+  if (theme === 'dark') {
+    element.classList.add('dark')
+  } else {
+    element.classList.remove('dark')
+  }
+  
+  localStorage.setItem('theme', theme)
+}
+
+// Initialize with saved/system theme
+applyTheme(getInitialTheme())
+
+// Add theme toggle command
+hotkeypad.setCommands([{
+  id: "toggle-theme",
+  title: "Toggle Dark Mode",
+  icon: "theme",
+  hotkey: "Ctrl + Shift + D",
+  handler: () => {
+    const current = localStorage.getItem('theme') || 'light'
+    const next = current === 'light' ? 'dark' : 'light'
+    applyTheme(next)
+  }
+}])
+```

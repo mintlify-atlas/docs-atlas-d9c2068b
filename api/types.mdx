@@ -1,0 +1,107 @@
+---
+title: Types
+description: TypeScript type definitions for HotKeyPad
+---
+
+## HotKeyPadCommand
+
+Interface for defining individual commands in the command palette.
+
+```typescript
+interface HotKeyPadCommand {
+  id: string
+  title: string
+  icon?: string
+  hotkey: string
+  section?: string
+  handler: (instance: HTMLElement) => void
+}
+```
+
+### Properties
+
+<ResponseField name="id" type="string" required>
+  Unique identifier for the command. Must be a non-empty string.
+</ResponseField>
+
+<ResponseField name="title" type="string" required>
+  Display name of the command shown in the palette. Must be a non-empty string.
+</ResponseField>
+
+<ResponseField name="icon" type="string" optional>
+  Icon to display next to the command. Can be:
+  - A Simple Icons slug (e.g., `"github"`, `"typescript"`)
+  - Custom HTML string containing `<svg>`, `<img>`, or `<i>` tags
+  - Empty string for no icon
+</ResponseField>
+
+<ResponseField name="hotkey" type="string" required>
+  Keyboard shortcut to trigger the command. Must be a non-empty string in the format `"Cmd+Key"` or `"Ctrl+Shift+Key"`. Maximum of 2 keys are supported. Cannot use browser/system reserved shortcuts like `Ctrl+T`, `Ctrl+N`, or `Ctrl+W`.
+</ResponseField>
+
+<ResponseField name="section" type="string" optional>
+  Section name to group related commands. Commands without a section are placed in an "Unlisted" group.
+</ResponseField>
+
+<ResponseField name="handler" type="(instance: HTMLElement) => void" required>
+  Function to execute when the command is triggered. Receives the HotKeyPad instance element as a parameter.
+</ResponseField>
+
+### Example
+
+```typescript
+const command: HotKeyPadCommand = {
+  id: 'search-docs',
+  title: 'Search documentation',
+  icon: 'googledocs',
+  hotkey: 'Cmd+K',
+  section: 'Navigation',
+  handler: (instance) => {
+    window.location.href = '/docs/search';
+  }
+};
+```
+
+## HotKeyPadOptionsProps
+
+Configuration options for initializing a HotKeyPad instance.
+
+```typescript
+type HotKeyPadOptionsProps = {
+  closeKey?: string
+  placeholder?: string
+  emptyMessage?: string
+  activationLetter?: string
+}
+```
+
+### Properties
+
+<ResponseField name="closeKey" type="string" optional default="Escape">
+  Key to close the command palette. Can be any valid keyboard key.
+</ResponseField>
+
+<ResponseField name="placeholder" type="string" optional default="Search command">
+  Placeholder text for the search input field.
+</ResponseField>
+
+<ResponseField name="emptyMessage" type="string" optional default="No commands found">
+  Message displayed when no commands match the search query.
+</ResponseField>
+
+<ResponseField name="activationLetter" type="string" optional default="K">
+  The letter key used in combination with Cmd/Ctrl to open the palette. For example, `"K"` creates the shortcut `Cmd+K` or `Ctrl+K`.
+</ResponseField>
+
+### Example
+
+```typescript
+const options: HotKeyPadOptionsProps = {
+  closeKey: 'Escape',
+  placeholder: 'Type a command or search...',
+  emptyMessage: 'No results',
+  activationLetter: 'P'
+};
+
+const hotkeypad = new HotKeyPad(options);
+```

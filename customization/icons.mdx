@@ -1,0 +1,244 @@
+---
+title: Icons
+description: Add custom icons to commands using SVG, images, font icons, or Simple Icons
+---
+
+HotkeyPad supports multiple icon formats, giving you flexibility to use any icon library or custom graphics in your commands.
+
+## Icon formats
+
+The `icon` field in command objects accepts four different formats:
+
+<CodeGroup>
+
+```javascript SVG
+{
+  id: "print",
+  title: "Print Page",
+  icon: `<svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+  </svg>`,
+  hotkey: "Ctrl + P",
+  handler: () => window.print()
+}
+```
+
+```javascript Image
+{
+  id: "user",
+  title: "View Profile",
+  icon: `<img src="/assets/icons/user.png" alt="User" />`,
+  hotkey: "Ctrl + U",
+  handler: () => console.log("Profile")
+}
+```
+
+```javascript Font icon
+{
+  id: "settings",
+  title: "Open Settings",
+  icon: `<i class="material-icons">settings</i>`,
+  hotkey: "Ctrl + S",
+  handler: () => console.log("Settings")
+}
+```
+
+```javascript Simple Icons (default)
+{
+  id: "github",
+  title: "Open GitHub",
+  icon: "github",  // Just the icon name
+  hotkey: "Ctrl + G",
+  handler: () => window.open("https://github.com")
+}
+```
+
+</CodeGroup>
+
+## Simple Icons integration
+
+By default, HotkeyPad uses [Simple Icons](https://simpleicons.org/) CDN. When you provide a plain string (not HTML), it automatically fetches the icon from `https://cdn.simpleicons.org/{icon}/{color}`.
+
+```javascript Simple Icons examples
+const commands = [
+  {
+    id: "twitter",
+    title: "Open Twitter",
+    icon: "twitter",  // Uses Simple Icons CDN
+    hotkey: "Ctrl + T",
+    handler: () => window.open("https://twitter.com")
+  },
+  {
+    id: "react",
+    title: "React Docs",
+    icon: "react",
+    hotkey: "Ctrl + R",
+    handler: () => window.open("https://react.dev")
+  }
+]
+```
+
+<Note>
+The icon color automatically adjusts based on the theme: black for light mode, white for dark mode.
+</Note>
+
+### How it works
+
+HotkeyPad detects the theme and applies the appropriate color:
+
+```typescript Source: index.ts:296-297
+#iconURL(icon: string) {
+  return `https://cdn.simpleicons.org/${icon}/${this.#svgIconColor}`
+}
+```
+
+The `#svgIconColor` variable is controlled by the dark mode observer (see [theming](/customization/theming)).
+
+## Custom SVG icons
+
+For custom SVG icons, include the complete SVG markup:
+
+```javascript Custom SVG
+const commands = [
+  {
+    id: "custom",
+    title: "Custom Action",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 6v6l4 2"/>
+    </svg>`,
+    hotkey: "Ctrl + C",
+    handler: () => console.log("Custom")
+  }
+]
+```
+
+<Tip>
+Use `currentColor` in SVG fills and strokes to inherit the text color from HotkeyPad's theme.
+</Tip>
+
+## Icon libraries
+
+HotkeyPad works seamlessly with popular icon libraries:
+
+<Tabs>
+  <Tab title="Heroicons">
+    ```javascript
+    import { ClipboardIcon } from '@heroicons/react/24/outline'
+    import { renderToString } from 'react-dom/server'
+    
+    const commands = [{
+      id: "copy",
+      title: "Copy to Clipboard",
+      icon: renderToString(<ClipboardIcon className="w-6 h-6" />),
+      hotkey: "Ctrl + C",
+      handler: () => navigator.clipboard.writeText("Copied!")
+    }]
+    ```
+  </Tab>
+  <Tab title="Font Awesome">
+    ```javascript
+    const commands = [{
+      id: "download",
+      title: "Download File",
+      icon: `<i class="fas fa-download"></i>`,
+      hotkey: "Ctrl + D",
+      handler: () => console.log("Download")
+    }]
+    ```
+    
+    Make sure to include Font Awesome CSS:
+    ```html
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    ```
+  </Tab>
+  <Tab title="Material Icons">
+    ```javascript
+    const commands = [{
+      id: "home",
+      title: "Go Home",
+      icon: `<i class="material-icons">home</i>`,
+      hotkey: "Ctrl + H",
+      handler: () => window.location.href = "/"
+    }]
+    ```
+    
+    Include Material Icons font:
+    ```html
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    ```
+  </Tab>
+  <Tab title="Lucide">
+    ```javascript
+    import { Home } from 'lucide'
+    
+    const commands = [{
+      id: "home",
+      title: "Go Home",
+      icon: Home.toSvg({ size: 24 }),
+      hotkey: "Ctrl + H",
+      handler: () => window.location.href = "/"
+    }]
+    ```
+  </Tab>
+</Tabs>
+
+## No icon
+
+Omit the `icon` field or set it to an empty string to display commands without icons:
+
+```javascript No icon example
+const commands = [
+  {
+    id: "logout",
+    title: "Logout",
+    // No icon field
+    hotkey: "Ctrl + L",
+    handler: () => console.log("Logout")
+  },
+  {
+    id: "help",
+    title: "Help",
+    icon: "",  // Empty string
+    hotkey: "Ctrl + H",
+    handler: () => console.log("Help")
+  }
+]
+```
+
+## Icon styling
+
+Icons are constrained to `1.5rem` (24px) by default. Customize the size using data attributes:
+
+```css Custom icon size
+#hotkeypad [data-hotkey] span {
+  width: 2rem;
+  height: 2rem;
+}
+
+#hotkeypad [data-hotkey] span:has(img) img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+```
+
+You can also style specific icon types:
+
+```css Icon type styles
+/* SVG icons */
+#hotkeypad [data-hotkey] span svg {
+  color: #667eea;
+}
+
+/* Font icons */
+#hotkeypad [data-hotkey] span i {
+  font-size: 1.25rem;
+}
+
+/* Image icons */
+#hotkeypad [data-hotkey] span img {
+  border-radius: 0.25rem;
+  filter: grayscale(0.5);
+}
+```

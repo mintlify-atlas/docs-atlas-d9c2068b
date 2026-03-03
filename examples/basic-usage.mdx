@@ -1,0 +1,214 @@
+---
+title: Basic usage
+description: Learn how to set up HotkeyPad with vanilla JavaScript and add your first commands
+---
+
+This guide shows you how to get started with HotkeyPad in a vanilla JavaScript project.
+
+## Installation
+
+Install HotkeyPad via npm:
+
+```bash
+npm install hotkeypad
+```
+
+Or use the CDN version:
+
+```html
+<script type="module">
+  import HotKeyPad from 'https://unpkg.com/hotkeypad?module'
+  const hotkeypad = new HotKeyPad()
+</script>
+```
+
+## Basic setup
+
+First, add the HotkeyPad container to your HTML:
+
+```html index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My App</title>
+</head>
+<body>
+  <div id="hotkeypad"></div>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
+```
+
+Then initialize HotkeyPad in your JavaScript:
+
+```javascript main.js
+import HotKeyPad from 'hotkeypad'
+
+const hotkeypad = new HotKeyPad({
+  placeholder: 'Search commands...',
+  emptyMessage: 'No commands found',
+  activationLetter: 'K'
+})
+```
+
+## Adding commands
+
+Use the `setCommands()` method to add keyboard shortcuts to your app:
+
+```javascript
+hotkeypad.setCommands([
+  {
+    id: 'home',
+    title: 'Go to Home',
+    icon: 'home',
+    hotkey: `${hotkeypad.activationKey} + H`,
+    section: 'Navigation',
+    handler: () => {
+      window.location.href = '/'
+    }
+  },
+  {
+    id: 'about',
+    title: 'Go to About',
+    icon: 'info',
+    hotkey: `${hotkeypad.activationKey} + A`,
+    section: 'Navigation',
+    handler: () => {
+      window.location.href = '/about'
+    }
+  },
+  {
+    id: 'print',
+    title: 'Print Page',
+    icon: 'print',
+    hotkey: `${hotkeypad.activationKey} + P`,
+    section: 'Actions',
+    handler: () => {
+      window.print()
+    }
+  }
+])
+```
+
+## Complete example
+
+Here's a complete working example with multiple commands:
+
+```javascript
+import HotKeyPad from 'hotkeypad'
+
+const hotkeypad = new HotKeyPad({
+  placeholder: 'Type a command or search...',
+  activationLetter: 'K'
+})
+
+hotkeypad.setCommands([
+  // Navigation commands
+  {
+    id: 'home',
+    title: 'Go to Home',
+    icon: 'home',
+    hotkey: `${hotkeypad.activationKey} + H`,
+    section: 'Navigation',
+    handler: () => {
+      window.location.href = '/'
+    }
+  },
+  {
+    id: 'about',
+    title: 'Go to About',
+    icon: 'aboutdotme',
+    hotkey: `${hotkeypad.activationKey} + A`,
+    section: 'Navigation',
+    handler: () => {
+      window.location.href = '/about'
+    }
+  },
+  {
+    id: 'contact',
+    title: 'Go to Contact',
+    icon: 'gmail',
+    hotkey: `${hotkeypad.activationKey} + C`,
+    section: 'Navigation',
+    handler: () => {
+      window.location.href = '/contact'
+    }
+  },
+  
+  // Theme commands
+  {
+    id: 'dark-mode',
+    title: 'Toggle Dark Mode',
+    icon: 'darkreader',
+    hotkey: `${hotkeypad.activationKey} + D`,
+    section: 'Appearance',
+    handler: () => {
+      document.documentElement.classList.toggle('dark')
+    }
+  },
+  
+  // Action commands
+  {
+    id: 'print',
+    title: 'Print Page',
+    icon: 'print',
+    hotkey: `${hotkeypad.activationKey} + P`,
+    section: 'Actions',
+    handler: () => {
+      window.print()
+    }
+  },
+  {
+    id: 'share',
+    title: 'Share Page',
+    icon: 'x',
+    hotkey: `${hotkeypad.activationKey} + S`,
+    section: 'Actions',
+    handler: async () => {
+      if (navigator.share) {
+        await navigator.share({
+          title: document.title,
+          url: window.location.href
+        })
+      }
+    }
+  },
+  {
+    id: 'copy-url',
+    title: 'Copy URL',
+    icon: 'link',
+    hotkey: `${hotkeypad.activationKey} + U`,
+    section: 'Actions',
+    handler: async () => {
+      await navigator.clipboard.writeText(window.location.href)
+      alert('URL copied to clipboard!')
+    }
+  }
+])
+```
+
+## Opening the command palette
+
+Press `Ctrl+K` (Windows/Linux) or `Cmd+K` (Mac) to open the command palette. You can:
+
+- Type to search commands
+- Use arrow keys or Tab to navigate
+- Press Enter to execute a command
+- Use the hotkey while the palette is open
+- Press Escape to close
+
+## Listening to events
+
+You can listen to open and close events:
+
+```javascript
+window.addEventListener('hotkeypad:open', () => {
+  console.log('Command palette opened')
+})
+
+window.addEventListener('hotkeypad:close', () => {
+  console.log('Command palette closed')
+})
+```

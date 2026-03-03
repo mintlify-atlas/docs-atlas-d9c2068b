@@ -1,0 +1,331 @@
+---
+title: Custom commands
+description: Create advanced commands with custom icons, sections, and complex handlers
+---
+
+This guide shows you how to create advanced commands with custom icons, organize them into sections, and implement complex handler functions.
+
+## Custom icons
+
+HotkeyPad supports multiple icon formats:
+
+### Using Simple Icons
+
+By default, HotkeyPad uses [Simple Icons](https://simpleicons.org/). Just pass the icon name:
+
+```javascript
+hotkeypad.setCommands([
+  {
+    id: 'github',
+    title: 'Open GitHub',
+    icon: 'github', // Uses Simple Icons
+    hotkey: `${hotkeypad.activationKey} + G`,
+    handler: () => {
+      window.open('https://github.com', '_blank')
+    }
+  }
+])
+```
+
+### Using custom SVG icons
+
+You can provide inline SVG for complete customization:
+
+```javascript
+hotkeypad.setCommands([
+  {
+    id: 'custom',
+    title: 'Custom Action',
+    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="16"/>
+      <line x1="8" y1="12" x2="16" y2="12"/>
+    </svg>`,
+    hotkey: `${hotkeypad.activationKey} + X`,
+    handler: () => {
+      console.log('Custom action executed')
+    }
+  }
+])
+```
+
+### Using image URLs
+
+You can use external or local images:
+
+```javascript
+hotkeypad.setCommands([
+  {
+    id: 'logo',
+    title: 'Go to Dashboard',
+    icon: '<img src="/logo.png" alt="Logo" />',
+    hotkey: `${hotkeypad.activationKey} + D`,
+    handler: () => {
+      window.location.href = '/dashboard'
+    }
+  }
+])
+```
+
+### Using icon fonts
+
+You can use font icons like Material Icons or Font Awesome:
+
+```javascript
+hotkeypad.setCommands([
+  {
+    id: 'settings',
+    title: 'Open Settings',
+    icon: '<i class="material-icons">settings</i>',
+    hotkey: `${hotkeypad.activationKey} + S`,
+    handler: () => {
+      window.location.href = '/settings'
+    }
+  }
+])
+```
+
+## Organizing with sections
+
+Group related commands into sections for better organization:
+
+```javascript
+hotkeypad.setCommands([
+  // Navigation section
+  {
+    id: 'home',
+    title: 'Home',
+    icon: 'home',
+    hotkey: `${hotkeypad.activationKey} + H`,
+    section: 'Navigation',
+    handler: () => window.location.href = '/'
+  },
+  {
+    id: 'projects',
+    title: 'Projects',
+    icon: 'folder',
+    hotkey: `${hotkeypad.activationKey} + P`,
+    section: 'Navigation',
+    handler: () => window.location.href = '/projects'
+  },
+  
+  // Social section
+  {
+    id: 'twitter',
+    title: 'Follow on Twitter',
+    icon: 'x',
+    hotkey: `${hotkeypad.activationKey} + T`,
+    section: 'Social',
+    handler: () => window.open('https://twitter.com/username', '_blank')
+  },
+  {
+    id: 'linkedin',
+    title: 'Connect on LinkedIn',
+    icon: 'linkedin',
+    hotkey: `${hotkeypad.activationKey} + L`,
+    section: 'Social',
+    handler: () => window.open('https://linkedin.com/in/username', '_blank')
+  },
+  
+  // Settings section
+  {
+    id: 'theme',
+    title: 'Toggle Theme',
+    icon: 'theme',
+    hotkey: `${hotkeypad.activationKey} + D`,
+    section: 'Settings',
+    handler: () => document.documentElement.classList.toggle('dark')
+  },
+  {
+    id: 'language',
+    title: 'Change Language',
+    icon: 'googletranslate',
+    hotkey: `${hotkeypad.activationKey} + I`,
+    section: 'Settings',
+    handler: () => {
+      const lang = document.documentElement.lang === 'en' ? 'es' : 'en'
+      document.documentElement.lang = lang
+    }
+  }
+])
+```
+
+Commands without a section will be grouped under "Unlisted".
+
+## Complex handlers
+
+### Async operations
+
+Handlers can be async functions:
+
+```javascript
+hotkeypad.setCommands([
+  {
+    id: 'fetch-data',
+    title: 'Refresh Data',
+    icon: 'syncalt',
+    hotkey: `${hotkeypad.activationKey} + R`,
+    section: 'Actions',
+    handler: async () => {
+      try {
+        const response = await fetch('/api/data')
+        const data = await response.json()
+        console.log('Data refreshed:', data)
+      } catch (error) {
+        console.error('Failed to refresh data:', error)
+      }
+    }
+  }
+])
+```
+
+### Accessing the HotkeyPad instance
+
+The handler receives the HotkeyPad instance as a parameter:
+
+```javascript
+hotkeypad.setCommands([
+  {
+    id: 'reload-commands',
+    title: 'Reload Commands',
+    icon: 'refresh',
+    hotkey: `${hotkeypad.activationKey} + F5`,
+    section: 'Developer',
+    handler: (instance) => {
+      // Access the hotkeypad instance
+      console.log('Instance:', instance)
+      
+      // You can perform operations with the instance
+      // The palette will close automatically after handler executes
+    }
+  }
+])
+```
+
+### Conditional logic
+
+Implement complex logic in your handlers:
+
+```javascript
+hotkeypad.setCommands([
+  {
+    id: 'auth-action',
+    title: 'Login / Logout',
+    icon: 'auth0',
+    hotkey: `${hotkeypad.activationKey} + L`,
+    section: 'Account',
+    handler: () => {
+      const isLoggedIn = localStorage.getItem('authToken')
+      
+      if (isLoggedIn) {
+        localStorage.removeItem('authToken')
+        window.location.href = '/login'
+      } else {
+        window.location.href = '/login'
+      }
+    }
+  }
+])
+```
+
+### Form submission
+
+Trigger form submissions:
+
+```javascript
+hotkeypad.setCommands([
+  {
+    id: 'submit-form',
+    title: 'Save Changes',
+    icon: 'save',
+    hotkey: `${hotkeypad.activationKey} + S`,
+    section: 'Forms',
+    handler: () => {
+      const form = document.querySelector('#main-form')
+      if (form) {
+        form.dispatchEvent(new Event('submit', { cancelable: true }))
+      }
+    }
+  }
+])
+```
+
+### Opening modals
+
+Trigger modal dialogs:
+
+```javascript
+hotkeypad.setCommands([
+  {
+    id: 'feedback',
+    title: 'Send Feedback',
+    icon: 'forms',
+    hotkey: `${hotkeypad.activationKey} + F`,
+    section: 'Help',
+    handler: () => {
+      const modal = document.querySelector('#feedback-modal')
+      if (modal) {
+        modal.style.display = 'block'
+      }
+    }
+  }
+])
+```
+
+## Dynamic commands
+
+You can update commands dynamically based on application state:
+
+```javascript
+function updateCommands() {
+  const isLoggedIn = localStorage.getItem('authToken')
+  
+  const commands = [
+    {
+      id: 'home',
+      title: 'Home',
+      icon: 'home',
+      hotkey: `${hotkeypad.activationKey} + H`,
+      section: 'Navigation',
+      handler: () => window.location.href = '/'
+    }
+  ]
+  
+  if (isLoggedIn) {
+    commands.push({
+      id: 'dashboard',
+      title: 'Dashboard',
+      icon: 'dashboard',
+      hotkey: `${hotkeypad.activationKey} + D`,
+      section: 'Navigation',
+      handler: () => window.location.href = '/dashboard'
+    })
+    
+    commands.push({
+      id: 'logout',
+      title: 'Logout',
+      icon: 'logout',
+      hotkey: `${hotkeypad.activationKey} + Q`,
+      section: 'Account',
+      handler: () => {
+        localStorage.removeItem('authToken')
+        window.location.href = '/login'
+      }
+    })
+  } else {
+    commands.push({
+      id: 'login',
+      title: 'Login',
+      icon: 'login',
+      hotkey: `${hotkeypad.activationKey} + L`,
+      section: 'Account',
+      handler: () => window.location.href = '/login'
+    })
+  }
+  
+  hotkeypad.setCommands(commands)
+}
+
+// Call when auth state changes
+updateCommands()
+```

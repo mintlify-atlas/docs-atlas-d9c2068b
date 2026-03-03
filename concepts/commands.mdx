@@ -1,0 +1,160 @@
+---
+title: Commands
+description: Learn how to define and organize commands in HotkeyPad using the HotKeyPadCommand interface
+---
+
+Commands are the core building blocks of HotkeyPad. Each command represents an action that users can trigger via keyboard shortcuts or by selecting from the command palette.
+
+## Command interface
+
+Commands are defined using the `HotKeyPadCommand` interface:
+
+```typescript
+interface HotKeyPadCommand {
+  id: string
+  title: string
+  icon?: string
+  hotkey: string
+  section?: string
+  handler: (instance: HTMLElement) => void
+}
+```
+
+<ParamField path="id" type="string" required>
+  A unique identifier for the command. Used internally to track and manage commands.
+</ParamField>
+
+<ParamField path="title" type="string" required>
+  The display name shown in the command palette. This text is searchable and should clearly describe the action.
+</ParamField>
+
+<ParamField path="icon" type="string">
+  An optional icon to display next to the command. Can be:
+  - A Simple Icons slug (e.g., `"github"`, `"twitter"`)
+  - Custom HTML (SVG, img tag, or icon font)
+  - Leave empty for no icon
+</ParamField>
+
+<ParamField path="hotkey" type="string" required>
+  The keyboard shortcut to trigger this command. Supports up to 2 keys (modifier + letter).
+  
+  Examples: `"Ctrl+S"`, `"Cmd+K"`, `"Alt+N"`
+  
+  <Note>Avoid browser/system reserved hotkeys like Ctrl+T, Ctrl+N, or Ctrl+W</Note>
+</ParamField>
+
+<ParamField path="section" type="string">
+  Optional group name to organize commands. Commands with the same section value appear together under a labeled group.
+  
+  If omitted, commands are placed in an "Unlisted" section without a header.
+</ParamField>
+
+<ParamField path="handler" type="(instance: HTMLElement) => void" required>
+  The function executed when the command is triggered. Receives the HotkeyPad instance element as a parameter.
+</ParamField>
+
+## Creating commands
+
+Define your commands as an array and pass them to `setCommands()`:
+
+```javascript
+const commands = [
+  {
+    id: "new-file",
+    title: "Create new file",
+    icon: "file",
+    hotkey: "Ctrl+N",
+    section: "File",
+    handler: (instance) => {
+      // Your logic here
+      console.log("Creating new file...")
+    }
+  },
+  {
+    id: "save",
+    title: "Save changes",
+    icon: "save",
+    hotkey: "Ctrl+S",
+    section: "File",
+    handler: (instance) => {
+      console.log("Saving...")
+    }
+  }
+]
+
+hotkeypad.setCommands(commands)
+```
+
+## Organizing with sections
+
+Sections help group related commands together. Commands with the same `section` value appear under a labeled heading:
+
+```javascript
+const commands = [
+  {
+    id: "cut",
+    title: "Cut",
+    hotkey: "Ctrl+X",
+    section: "Edit",  // Grouped under "Edit"
+    handler: () => {}
+  },
+  {
+    id: "copy",
+    title: "Copy",
+    hotkey: "Ctrl+C",
+    section: "Edit",  // Grouped under "Edit"
+    handler: () => {}
+  },
+  {
+    id: "settings",
+    title: "Open settings",
+    hotkey: "Ctrl+,",
+    section: "Preferences",  // Different section
+    handler: () => {}
+  }
+]
+```
+
+This creates two distinct groups in the command palette:
+- **Edit** section with Cut and Copy
+- **Preferences** section with Open settings
+
+<Tip>
+  Use consistent section names across your commands to create a well-organized command palette.
+</Tip>
+
+## Command validation
+
+HotkeyPad validates commands when you call `setCommands()`. The following rules apply:
+
+<Accordion title="Validation rules">
+  - The commands array cannot be empty
+  - Each command must have `id`, `title`, `hotkey`, and `handler` (all non-empty)
+  - Hotkeys must be valid (no reserved browser shortcuts)
+  - Hotkeys support maximum 2 keys (modifier + letter)
+  - Icons, if provided, must be strings
+</Accordion>
+
+<Note>
+  Invalid commands throw an error with a descriptive message to help you fix the issue.
+</Note>
+
+## Handler execution
+
+When a command is triggered (via hotkey or selection), HotkeyPad:
+
+1. Executes the handler function after a 200ms delay
+2. Passes the HotkeyPad instance element to the handler
+3. Automatically closes the command palette
+
+```javascript
+{
+  id: "theme-toggle",
+  title: "Toggle theme",
+  hotkey: "Ctrl+T",
+  handler: (instance) => {
+    // instance is the #hotkeypad element
+    instance.classList.toggle('dark')
+  }
+}
+```
