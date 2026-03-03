@@ -59,24 +59,31 @@ You can also use HotkeyPad directly from a CDN without any build step:
 
 ## Importing in your project
 
-Once installed, import HotkeyPad into your JavaScript or TypeScript file:
+Once installed, import HotkeyPad and its CSS into your JavaScript or TypeScript file:
 
 <CodeGroup>
 
 ```javascript ES6
 import HotKeyPad from 'hotkeypad'
+import 'hotkeypad/index.css'
 ```
 
 ```javascript CommonJS
 const HotKeyPad = require('hotkeypad')
+require('hotkeypad/index.css')
 ```
 
 ```typescript TypeScript
 import HotKeyPad from 'hotkeypad'
 import type { HotKeyPadCommand, HotKeyPadOptionsProps } from 'hotkeypad'
+import 'hotkeypad/index.css'
 ```
 
 </CodeGroup>
+
+<Note>
+  You must import the CSS file for HotkeyPad to display correctly. The CSS includes all default styles and variables.
+</Note>
 
 ## Requirements
 

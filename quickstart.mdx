@@ -28,10 +28,11 @@ Make sure you have [installed HotkeyPad](/installation) via npm or CDN.
 </Step>
 
 <Step title="Import and initialize HotkeyPad">
-  Import HotkeyPad and create a new instance:
+  Import HotkeyPad, its CSS, and create a new instance:
 
   ```javascript
   import HotKeyPad from 'hotkeypad'
+  import 'hotkeypad/index.css'
 
   const hotkeypad = new HotKeyPad()
   ```
@@ -97,6 +98,7 @@ Here's a complete working example:
 <head>
   <meta charset="UTF-8">
   <title>HotkeyPad Demo</title>
+  <link rel="stylesheet" href="https://unpkg.com/hotkeypad/dist/styles/index.css">
 </head>
 <body>
   <h1>Press Cmd+K (or Ctrl+K) to open commands</h1>

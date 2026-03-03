@@ -16,6 +16,7 @@ npm install hotkeypad
 Or use the CDN version:
 
 ```html
+<link rel="stylesheet" href="https://unpkg.com/hotkeypad/dist/styles/index.css">
 <script type="module">
   import HotKeyPad from 'https://unpkg.com/hotkeypad?module'
   const hotkeypad = new HotKeyPad()
@@ -45,6 +46,7 @@ Then initialize HotkeyPad in your JavaScript:
 
 ```javascript main.js
 import HotKeyPad from 'hotkeypad'
+import 'hotkeypad/index.css'
 
 const hotkeypad = new HotKeyPad({
   placeholder: 'Search commands...',
@@ -98,6 +100,7 @@ Here's a complete working example with multiple commands:
 
 ```javascript
 import HotKeyPad from 'hotkeypad'
+import 'hotkeypad/index.css'
 
 const hotkeypad = new HotKeyPad({
   placeholder: 'Type a command or search...',

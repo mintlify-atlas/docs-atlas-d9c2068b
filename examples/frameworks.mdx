@@ -14,7 +14,7 @@ HotkeyPad is framework-agnostic and works seamlessly with any JavaScript framewo
     ```jsx
     import { useEffect } from 'react'
     import HotKeyPad from 'hotkeypad'
-    import 'hotkeypad/dist/style.css'
+    import 'hotkeypad/index.css'
 
     function App() {
       useEffect(() => {
@@ -171,7 +171,7 @@ Create a reusable hook for better integration:
     import { onMounted } from 'vue'
     import { useRouter } from 'vue-router'
     import HotKeyPad from 'hotkeypad'
-    import 'hotkeypad/dist/style.css'
+    import 'hotkeypad/index.css'
 
     const router = useRouter()
 
@@ -303,7 +303,7 @@ Create a composable for reusability:
       import { onMount } from 'svelte'
       import { goto } from '$app/navigation'
       import HotKeyPad from 'hotkeypad'
-      import 'hotkeypad/dist/style.css'
+      import 'hotkeypad/index.css'
 
       onMount(() => {
         const hotkeypad = new HotKeyPad({
@@ -367,7 +367,7 @@ Create a composable for reusability:
     import { useEffect } from 'react'
     import { useRouter } from 'next/navigation'
     import HotKeyPad from 'hotkeypad'
-    import 'hotkeypad/dist/style.css'
+    import 'hotkeypad/index.css'
 
     export default function HotKeyPadProvider() {
       const router = useRouter()
@@ -446,7 +446,7 @@ Create a composable for reusability:
   <Tab title="plugins/hotkeypad.client.js">
     ```javascript
     import HotKeyPad from 'hotkeypad'
-    import 'hotkeypad/dist/style.css'
+    import 'hotkeypad/index.css'
 
     export default defineNuxtPlugin(() => {
       const router = useRouter()
@@ -514,7 +514,7 @@ Create a composable for reusability:
       import { onMount } from 'svelte'
       import { goto } from '$app/navigation'
       import HotKeyPad from 'hotkeypad'
-      import 'hotkeypad/dist/style.css'
+      import 'hotkeypad/index.css'
 
       onMount(() => {
         const hotkeypad = new HotKeyPad({
