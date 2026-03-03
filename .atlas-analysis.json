@@ -1,0 +1,72 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "HotkeyPad",
+  "projectDescription": "Lightweight keyboard shortcut interface for your website, built with vanilla JS and zero dependencies.",
+  "theme": "palm",
+  "primaryColor": "#8b5cf6",
+  "lightColor": "#a78bfa",
+  "darkColor": "#7c3aed",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "pages": [
+          "introduction",
+          "installation",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Core Concepts",
+        "pages": [
+          "concepts/commands",
+          "concepts/keyboard-navigation",
+          "concepts/events"
+        ]
+      },
+      {
+        "group": "Customization",
+        "pages": [
+          "customization/styling",
+          "customization/icons",
+          "customization/theming"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "pages": [
+          "api/hotkeypad-class",
+          "api/types",
+          "api/configuration"
+        ]
+      },
+      {
+        "group": "Examples",
+        "pages": [
+          "examples/basic-usage",
+          "examples/custom-commands",
+          "examples/frameworks"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Zero dependencies, built with vanilla JavaScript",
+    "Keyboard navigation with arrow keys and enter",
+    "Customizable commands with icons and hotkeys",
+    "Light and dark mode support with CSS variables",
+    "Event system for open/close lifecycle hooks",
+    "Framework-agnostic, works with React, Vue, and vanilla JS"
+  ],
+  "publicApiSurface": [
+    "HotKeyPad (class)",
+    "setCommands(commands: HotKeyPadCommand[])",
+    "open()",
+    "close()",
+    "activationKey (getter)",
+    "HotKeyPadCommand (type)",
+    "HotKeyPadOptionsProps (type)",
+    "hotkeypad:open (event)",
+    "hotkeypad:close (event)"
+  ]
+}
